@@ -23,7 +23,7 @@ struct InoEvent
 {
 	enum InoAction action;
 	int dir;
-	char* path;
+	const char* path;
 };
 
 void ino_pollEvent(); // Met à jour les évènements stockés
