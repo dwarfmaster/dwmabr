@@ -2182,11 +2182,12 @@ zoom(const Arg *arg) {
 int
 main(int argc, char *argv[]) {
 	char* path;
+	size_t length;
 	if( argc > 1 )
 		path = argv[1];
 	else
 		path = "/home/xxx/Documents/img.png";
-	char** alls = parts(path);
+	char** alls = parts(path, &length);
 	if( alls == NULL )
 	{
 		printf("Error while cutting.\n");
@@ -2194,13 +2195,13 @@ main(int argc, char *argv[]) {
 	}
 
 	int i;
-	for(i = 0; alls[i] != NULL; ++i)
-		printf("%s : %s\n", i, alls[i]);
+	for(i = 0; i < length; ++i)
+		printf("%i : %s\n", i, alls[i]);
 	free(alls);
 
 	printf("\nEnd parts.\n\n");
 	char* tmp = filename(path);
-	printf("Filename : %s\n", (tmp != NULL)?tmp:"error");
+	printf("Filename : %s\n\n", (tmp != NULL)?tmp:"error");
 	free(tmp);
 
 	tmp = dir(path);
