@@ -73,7 +73,7 @@ char* filename(char* path)
 	if( file == NULL )
 		return NULL;
 	memcpy(file, alls[pos], strlen(alls[pos]));
-	free(alls); // TODO freeall
+	freeAll(alls, length);
 
 	return file;
 }
