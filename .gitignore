@@ -8,3 +8,9 @@ Makefile
 # Doc
 doc/html
 doc/latex
+
+# Tests
+*test*
+*Test*
+*tmp*
+
