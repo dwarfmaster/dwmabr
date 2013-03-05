@@ -49,6 +49,7 @@ char** parts(char* path)
 
 char* filename(char* path)
 {
+	printf("Begin filename.");
 	char** alls = parts(path);
 	if(alls == NULL)
 		return NULL;
@@ -57,10 +58,13 @@ char* filename(char* path)
 	while(alls[i] != NULL)
 		++i;
 	--i;
+	printf("Size : %i", i);
 	
 	char* file = malloc(sizeof(char) * strlen(alls[i]));
 	memcpy(file, alls[i], strlen(file));
 	free(alls);
+
+	printf("Fin de filename.");
 	return file;
 }
 
