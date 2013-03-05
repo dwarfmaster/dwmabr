@@ -27,7 +27,7 @@ struct InoEvent
 };
 
 void ino_pollEvent(); // Met à jour les évènements stockés
-int ino_getEvent(InoEvent* ev, InoWatch wd); // Retourne le nombre d'évènement restant
+int ino_getEvent(InoEvent* ev, InoWatch wd); // Retourne 1 tant qu'il reste des évènements
 
 #endif
 
