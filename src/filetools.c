@@ -7,14 +7,18 @@
 char** parts(char* path)
 {
 	size_t nbParts = 0, i = 0;
-	char* part = strtok(path, "/");
+	char* part = NULL;
 	char** alls = NULL;
 
+	printf("Path = %s\n", path);
+	part = strtok(path, "/");
 	while(part != NULL)
 	{
 		++nbParts;
+		printf("Part : %s\n", part);
 		part = strtok(NULL, "/");
 	}
+	printf("Path = %s\n", path);
 
 	if(nbParts == 0)
 		return  NULL;
