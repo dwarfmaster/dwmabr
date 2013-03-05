@@ -234,7 +234,7 @@ void ino_pollEvent()
 				else
 				{
 					struct stackEv* aev = watches[j].first;
-					while(aev->next != NULL) {}
+					while(aev->next != NULL) { aev = aev->next; }
 					aev->next = sev;
 				}
 
