@@ -119,4 +119,12 @@ struct dirent** dirContain(DIR* dir, size_t* length)
 	return files;
 }
 
+void freeAll(char** alls, size_t length)
+{
+	size_t i;
+	for(i = 0; i < length; ++i)
+		free(alls[i]);
+	free(alls);
+}
+
 

@@ -10,6 +10,7 @@ char** parts(char* path, size_t* length); // Découpe un chemin : /home/xxx/Docu
 char* filename(char* path); // /home/xxx/Documents/img.png -> img.png
 char* dir(char* path); // /home/xxx/Documents/img.png -> /home/xxx/Documents/
 struct dirent** dirContain(DIR* dir, size_t* length); // Écrit la taille lue dans length
+void freeAll(char** alls, size_t length); // Facilite la libération du retour de parts
 
 #endif
 
