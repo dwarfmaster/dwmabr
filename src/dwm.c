@@ -21,6 +21,7 @@
  * To understand everything else, start reading main().
  */
 #include "filetools.h"
+#include "inotools.h"
 
 #include <errno.h>
 #include <locale.h>
@@ -2181,31 +2182,70 @@ zoom(const Arg *arg) {
 
 int
 main(int argc, char *argv[]) {
-	char* path;
-	size_t length;
-	if( argc > 1 )
-		path = argv[1];
-	else
-		path = "/home/xxx/Documents/img.png";
-	char** alls = parts(path, &length);
-	if( alls == NULL )
-	{
-		printf("Error while cutting.\n");
-		return 1;
+	ino_init();
+	InoWatch w1 = ino_watch("test1/");
+	if( w1 < 0 ) {
+		printf("Error : \"%s\".\n", ino_error());
+		return EXIT_FAILURE;
+	}
+	InoWatch w2 = ino_watch("test2/");
+	if( w2 < 0 ) {
+		printf("Error : \"%s\".\n", ino_error());
+		return EXIT_FAILURE;
 	}
 
-	int i;
-	for(i = 0; i < length; ++i)
-		printf("%i : %s\n", i, alls[i]);
-	freeAll(alls, length);
+	InoEvent ev;
+	while( w2 > 0 && w1 > 0 )
+	{
+		ino_pollEvent();
 
-	char* tmp = filename(path);
-	printf("Filename : %s\n", (tmp != NULL)?tmp:"error");
-	free(tmp);
+		while(ino_getEvent(&ev, w1))
+		{
+			switch(ev.action)
+			{
+				case END:
+					w1 = -1;
+					printf("Fin de la surveillance de %s.\n", ev.path);
+					break;
+				case WRITE:
+					printf("Le %s \"%s\" a été modifié dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				case CREATE:
+					printf("Le %s \"%s\" a été créé dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				case DELETE:
+					printf("Le %s \"%s\" a été supprimé dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				default:
+					break;
+			}
+		}
 
-	tmp = dir(path);
-	printf("Directory : %s\n", (tmp!=NULL)?tmp:"error");
-	free(tmp);
+		while(ino_getEvent(&ev, w2))
+		{
+			switch(ev.action)
+			{
+				case END:
+					w2 = -1;
+					printf("Fin de la surveillance de %s.\n", ev.path);
+					break;
+				case WRITE:
+					printf("Le %s \"%s\" a été modifié dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				case CREATE:
+					printf("Le %s \"%s\" a été créé dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				case DELETE:
+					printf("Le %s \"%s\" a été supprimé dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
+	ino_unwatch(w2);
+	ino_unwatch(w1);
+	ino_close();
 	return EXIT_SUCCESS;
 }
