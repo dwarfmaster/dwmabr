@@ -2195,7 +2195,7 @@ main(int argc, char *argv[]) {
 	}
 
 	InoEvent ev;
-	while( w2 > 0 && w1 > 0 )
+	while( w2 >= 0 || w1 >= 0 )
 	{
 		ino_pollEvent();
 
