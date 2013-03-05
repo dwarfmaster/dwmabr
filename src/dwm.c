@@ -2182,15 +2182,20 @@ zoom(const Arg *arg) {
 
 int
 main(int argc, char *argv[]) {
-	ino_init();
+	if( ino_init() < 0 )
+	{
+		printf("Erreur lors de l'initialisation d'inotify : \"%s\".\n", ino_error);
+		return EXIT_FAILURE;
+	}
+
 	InoWatch w1 = ino_watch("test1/");
 	if( w1 < 0 ) {
-		printf("Error : \"%s\".\n", ino_error());
+		printf("Error w1 : \"%s\".\n", ino_error());
 		return EXIT_FAILURE;
 	}
 	InoWatch w2 = ino_watch("test2/");
 	if( w2 < 0 ) {
-		printf("Error : \"%s\".\n", ino_error());
+		printf("Error w2 : \"%s\".\n", ino_error());
 		return EXIT_FAILURE;
 	}
 
@@ -2208,15 +2213,17 @@ main(int argc, char *argv[]) {
 					printf("Fin de la surveillance de %s.\n", ev.path);
 					break;
 				case WRITE:
-					printf("Le %s \"%s\" a été modifié dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été modifié dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				case CREATE:
-					printf("Le %s \"%s\" a été créé dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été créé dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				case DELETE:
-					printf("Le %s \"%s\" a été supprimé dans w1.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été supprimé dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				default:
+					printf("Le %s \"%s\" a reçu un évènement dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
+
 					break;
 			}
 		}
@@ -2230,15 +2237,16 @@ main(int argc, char *argv[]) {
 					printf("Fin de la surveillance de %s.\n", ev.path);
 					break;
 				case WRITE:
-					printf("Le %s \"%s\" a été modifié dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été modifié dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				case CREATE:
-					printf("Le %s \"%s\" a été créé dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été créé dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				case DELETE:
-					printf("Le %s \"%s\" a été supprimé dans w2.", (ev.dir ? "dossier" : "fichier"), ev.path);
+					printf("Le %s \"%s\" a été supprimé dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 				default:
+					printf("Le %s \"%s\" a reçu un évènement dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
 					break;
 			}
 		}

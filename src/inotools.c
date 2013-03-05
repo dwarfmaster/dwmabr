@@ -195,6 +195,7 @@ void ino_pollEvent()
 			if( watches[j].wd == event->wd )
 			{
 				printf("This event is related to a watch !\n");
+				printf("Event : %s%s, dir=%i\n", (event->len ? "name=" : ""), (event->len ? event->name : ""), (event->mask & IN_ISDIR));
 				InoEvent ev;
 				if( event->len )
 					ev.path = event->name;
@@ -247,11 +248,13 @@ int ino_getEvent(InoEvent* ev, InoWatch wd)
 {
 	unsigned int i;
 
+	printf("Trying get event for %i.\n", wd);
 	for(i = 0; i < usedW; ++i)
 	{
+		printf("\t-> trying %i.\n", watches[i].wd);
 		if( watches[i].wd == wd )
 		{
-			printf("Event found !\n");
+			printf("Event link found !\n");
 			struct stackEv* sev = watches[i].first;
 			if( sev == NULL )
 				return 0;
