@@ -20,9 +20,6 @@
  *
  * To understand everything else, start reading main().
  */
-#include "filetools.h"
-#include "inotools.h"
-
 #include <errno.h>
 #include <locale.h>
 #include <stdarg.h>
@@ -2182,78 +2179,19 @@ zoom(const Arg *arg) {
 
 int
 main(int argc, char *argv[]) {
-	if( ino_init() < 0 )
-	{
-		printf("Erreur lors de l'initialisation d'inotify : \"%s\".\n", ino_error);
-		return EXIT_FAILURE;
-	}
-
-	InoWatch w1 = ino_watch("test1/");
-	if( w1 < 0 ) {
-		printf("Error w1 : \"%s\".\n", ino_error());
-		return EXIT_FAILURE;
-	}
-	InoWatch w2 = ino_watch("test2/");
-	if( w2 < 0 ) {
-		printf("Error w2 : \"%s\".\n", ino_error());
-		return EXIT_FAILURE;
-	}
-
-	InoEvent ev;
-	while( w2 >= 0 || w1 >= 0 )
-	{
-		ino_pollEvent();
-
-		while(ino_getEvent(&ev, w1))
-		{
-			switch(ev.action)
-			{
-				case END:
-					w1 = -1;
-					printf("Fin de la surveillance de %s.\n", ev.path);
-					break;
-				case WRITE:
-					printf("Le %s \"%s\" a été modifié dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				case CREATE:
-					printf("Le %s \"%s\" a été créé dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				case DELETE:
-					printf("Le %s \"%s\" a été supprimé dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				default:
-					printf("Le %s \"%s\" a reçu un évènement dans w1.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-
-					break;
-			}
-		}
-
-		while(ino_getEvent(&ev, w2))
-		{
-			switch(ev.action)
-			{
-				case END:
-					w2 = -1;
-					printf("Fin de la surveillance de %s.\n", ev.path);
-					break;
-				case WRITE:
-					printf("Le %s \"%s\" a été modifié dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				case CREATE:
-					printf("Le %s \"%s\" a été créé dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				case DELETE:
-					printf("Le %s \"%s\" a été supprimé dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-				default:
-					printf("Le %s \"%s\" a reçu un évènement dans w2.\n", (ev.dir ? "dossier" : "fichier"), ev.path);
-					break;
-			}
-		}
-	}
-
-	ino_unwatch(w2);
-	ino_unwatch(w1);
-	ino_close();
+	if(argc == 2 && !strcmp("-v", argv[1]))
+		die("dwmabr dev, © 2013 Luc Chabassier, source code from dwm project.\n");
+	else if(argc != 1)
+		die("usage: dwm [-v]\n");
+	if(!setlocale(LC_CTYPE, "") || !XSupportsLocale())
+		fputs("warning: no locale support\n", stderr);
+	if(!(dpy = XOpenDisplay(NULL)))
+		die("dwm: cannot open display\n");
+	checkotherwm();
+	setup();
+	scan();
+	run();
+	cleanup();
+	XCloseDisplay(dpy);
 	return EXIT_SUCCESS;
 }
