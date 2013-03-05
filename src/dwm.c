@@ -2197,11 +2197,10 @@ main(int argc, char *argv[]) {
 	int i;
 	for(i = 0; i < length; ++i)
 		printf("%i : %s\n", i, alls[i]);
-	free(alls);
+	freeAll(alls, length);
 
-	printf("\nEnd parts.\n\n");
 	char* tmp = filename(path);
-	printf("Filename : %s\n\n", (tmp != NULL)?tmp:"error");
+	printf("Filename : %s\n", (tmp != NULL)?tmp:"error");
 	free(tmp);
 
 	tmp = dir(path);
