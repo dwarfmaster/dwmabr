@@ -130,6 +130,8 @@ InoWatch ino_watch(const char* path)
 			free(watches);
 		watches = tmp;
 	}
+	else
+		watches[usedW - 1] = watch;
 
 	printf("UsedW : %i\n", usedW);
 	printf("sizeW : %i\n", sizeW);
