@@ -2198,6 +2198,7 @@ main(int argc, char *argv[]) {
 		printf("%s : %s\n", i, alls[i]);
 	free(alls);
 
+	printf("\nEnd parts.\n\n");
 	char* tmp = filename(path);
 	printf("Filename : %s\n", (tmp != NULL)?tmp:"error");
 	free(tmp);
