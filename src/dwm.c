@@ -2187,11 +2187,24 @@ main(int argc, char *argv[]) {
 	else
 		path = "/home/xxx/Documents/img.png";
 	char** alls = parts(path);
+	if( alls == NULL )
+	{
+		printf("Error while cutting.\n");
+		return 1;
+	}
+
 	int i;
 	for(i = 0; alls[i] != NULL; ++i)
 		printf("%s : %s\n", i, alls[i]);
-	printf("Filename : %s\n", filename(path));
-	printf("Directory : %s\n", dir(path));
+	free(alls);
+
+	char* tmp = filename(path);
+	printf("Filename : %s\n", (tmp != NULL)?tmp:"error");
+	free(tmp);
+
+	tmp = dir(path);
+	printf("Directory : %s\n", (tmp!=NULL)?tmp:"error");
+	free(tmp);
 
 	return EXIT_SUCCESS;
 }
