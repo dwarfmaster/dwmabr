@@ -69,22 +69,21 @@ char** parts(char* path, size_t* length)
 char* filename(char* path)
 {
 	printf("Begin filename.\n");
-	char** alls = parts(path);
+	size_t length = 0;
+	char** alls = parts(path, &length);
 	if(alls == NULL)
 		return NULL;
 
 	size_t i = 0;
-	while(alls[i] != NULL)
-	{
+	for(i = 0; i < length; ++i)
 		printf("\tAll[%i] = %s\n", i, alls[i]);
-		++i;
-	}
-	--i;
-	printf("Size : %i", i);
+	printf("Size : %i", length);
 	
-	char* file = malloc(sizeof(char) * strlen(alls[i]));
+	char* file = malloc(sizeof(char) * strlen(alls[length - 1]));
+	if( file == NULL )
+		return NULL;
 	memcpy(file, alls[i], strlen(file));
-	free(alls);
+	free(alls); // TODO freeall
 
 	printf("Fin de filename.");
 	return file;
