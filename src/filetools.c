@@ -10,15 +10,20 @@ char** parts(char* path)
 	char* part = NULL;
 	char** alls = NULL;
 
-	printf("Path = %s\n", path);
-	part = strtok(path, "/");
+	char* usedPath = malloc(sizeof(char) * strlen(path));
+	if( usedPath == NULL )
+		return NULL;
+	strcpy(path, usedPath);
+
+	printf("Path = %s\n", usedPath);
+	part = strtok(usedPath, "/");
 	while(part != NULL)
 	{
 		++nbParts;
 		printf("Part : %s\n", part);
 		part = strtok(NULL, "/");
 	}
-	printf("Path = %s\n", path);
+	printf("Path = %s\n", usedPath);
 
 	if(nbParts == 0)
 		return  NULL;
@@ -27,12 +32,14 @@ char** parts(char* path)
 	if(alls == NULL)
 		return NULL;
 
-	part = strtok(path, "/");
+	strcpy(path, usedPath);
+	part = strtok(usedPath, "/");
 	while(part != NULL)
 	{
 		alls[i] = part;
 		strtok(NULL, "/");
 	}
+	free(usedPath);
 
 	alls[nbParts-1] = NULL;
 	return alls;
