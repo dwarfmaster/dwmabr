@@ -12,7 +12,6 @@ char* duplicate(const char* src)
 		return NULL;
 
 	memcpy(new, src, size);
-	printf("Duplicate : \"%s\" to \"%s\".\n", src, new);
 	return new;
 }
 
@@ -26,12 +25,10 @@ char** parts(char* path, size_t* length)
 	if( usedPath == NULL )
 		return NULL;
 	
-	printf("Path = %s\n", usedPath);
 	part = strtok(usedPath, "/");
 	while(part != NULL)
 	{
 		++nbParts;
-		printf("Part : %s\n", part);
 		part = strtok(NULL, "/");
 	}
 
@@ -43,7 +40,6 @@ char** parts(char* path, size_t* length)
 		return NULL;
 
 	strcpy(usedPath, path);
-	printf("Path = %s\n", usedPath);
 	part = strtok(usedPath, "/");
 	while(part != NULL)
 	{
@@ -55,7 +51,6 @@ char** parts(char* path, size_t* length)
 				free(alls[i]);
 			return NULL;
 		}
-		printf("Part : %s\n", alls[i]);
 		++i;
 		part = strtok(NULL, "/");
 	}
@@ -63,7 +58,6 @@ char** parts(char* path, size_t* length)
 
 	if(length != NULL)
 		*length = nbParts;
-	printf("End\n");
 	return alls;
 }
 
