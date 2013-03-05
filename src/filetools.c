@@ -71,22 +71,6 @@ char* dir(char* path)
 	return dirp;
 }
 
-int readInt(FILE* f)
-{
-}
-
-unsigned int readUInt(FILE* f)
-{
-}
-
-double readDouble(FILE* f)
-{
-}
-
-char* readWord(FILE* f)
-{
-}
-
 struct dirent** dirContain(DIR* dir, size_t* length)
 {
 	struct dirent* afile;
