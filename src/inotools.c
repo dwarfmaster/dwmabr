@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <stdio.h>
+
 static int inoInstance;
 static char* errormsg;
 
@@ -129,7 +131,10 @@ InoWatch ino_watch(const char* path)
 		watches = tmp;
 	}
 
-	return 0;
+	printf("UsedW : %i\n", usedW);
+	printf("sizeW : %i\n", sizeW);
+
+	return watch.wd;
 }
 
 void ino_unwatch(InoWatch wd)
@@ -166,6 +171,9 @@ void ino_unwatch(InoWatch wd)
 			}
 		}
 	}
+
+	printf("UsedW : %i\n", usedW);
+	printf("sizeW : %i\n", sizeW);
 }
 
 void ino_pollEvent()
@@ -181,10 +189,12 @@ void ino_pollEvent()
 	for(i = 0; i < length;)
 	{
 		struct inotify_event* event = (struct inotify_event*) &buffer[i];
+		printf("An inotify event append !\n");
 		for(j = 0; j < usedW; ++j)
 		{
 			if( watches[j].wd == event->wd )
 			{
+				printf("This event is related to a watch !\n");
 				InoEvent ev;
 				if( event->len )
 					ev.path = event->name;
@@ -209,6 +219,8 @@ void ino_pollEvent()
 				else if( event->mask & IN_MOVE_SELF
 						|| event->mask & IN_DELETE_SELF )
 					ev.action = END;
+				else
+					printf("This event was not expected.\n");
 
 				struct stackEv* sev = malloc(sizeof(struct stackEv));
 				sev->event = ev;
@@ -239,6 +251,7 @@ int ino_getEvent(InoEvent* ev, InoWatch wd)
 	{
 		if( watches[i].wd == wd )
 		{
+			printf("Event found !");
 			struct stackEv* sev = watches[i].first;
 			if( sev == NULL )
 				return 0;
