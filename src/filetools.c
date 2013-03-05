@@ -4,17 +4,26 @@
 #include <string.h>
 #include <stdlib.h>
 
-char** parts(char* path)
+char* duplicate(const char* src)
+{
+	size_t size = sizeof(char) * strlen(src);
+	char* new = malloc(size);
+	if(new == NULL)
+		return NULL;
+
+	return memcpy(new, src, size);
+}
+
+char** parts(char* path, size_t* length)
 {
 	size_t nbParts = 0, i = 0;
 	char* part = NULL;
 	char** alls = NULL;
 
-	char* usedPath = malloc(sizeof(char) * strlen(path));
+	char* usedPath = duplicate(path);
 	if( usedPath == NULL )
 		return NULL;
-	strcpy(usedPath, path);
-
+	
 	printf("Path = %s\n", usedPath);
 	part = strtok(usedPath, "/");
 	while(part != NULL)
@@ -27,7 +36,7 @@ char** parts(char* path)
 	if(nbParts == 0)
 		return  NULL;
 
-	alls = malloc(sizeof(char*) * (nbParts + 1));
+	alls = malloc(sizeof(char*) * nbParts);
 	if(alls == NULL)
 		return NULL;
 
@@ -36,27 +45,40 @@ char** parts(char* path)
 	part = strtok(usedPath, "/");
 	while(part != NULL)
 	{
-		alls[i] = part;
-		printf("Part : %s\n", part);
+		alls[i] = duplicate(part);
+		if(alls[i] == NULL)
+		{
+			size_t j;
+			for(j = 0; j < i; ++j)
+				free(alls[i]);
+			return NULL;
+		}
+		++i;
+
+		printf("Part : %s\n", alls[i]);
 		part = strtok(NULL, "/");
 	}
 	free(usedPath);
 
-	alls[nbParts-1] = NULL;
+	if(length != NULL)
+		*length = nbParts;
 	printf("End\n");
 	return alls;
 }
 
 char* filename(char* path)
 {
-	printf("Begin filename.");
+	printf("Begin filename.\n");
 	char** alls = parts(path);
 	if(alls == NULL)
 		return NULL;
 
 	size_t i = 0;
 	while(alls[i] != NULL)
+	{
+		printf("\tAll[%i] = %s\n", i, alls[i]);
 		++i;
+	}
 	--i;
 	printf("Size : %i", i);
 	

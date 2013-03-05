@@ -6,7 +6,7 @@
 #include <stdio.h>
 
 // Le retour des fonctions suivantes doit être libéré avec free, et est égal à NULL en cas d'erreur
-char** parts(char* path); // Découpe un chemin : /home/xxx/Documents/img.png -> home, xxx, Documents, img.png
+char** parts(char* path, size_t* length); // Découpe un chemin : /home/xxx/Documents/img.png -> home, xxx, Documents, img.png, chaque chaine doit être libérée avant de libéré le tout
 char* filename(char* path); // /home/xxx/Documents/img.png -> img.png
 char* dir(char* path); // /home/xxx/Documents/img.png -> /home/xxx/Documents/
 struct dirent** dirContain(DIR* dir, size_t* length); // Écrit la taille lue dans length
