@@ -20,6 +20,8 @@
  *
  * To understand everything else, start reading main().
  */
+#include "filetools.h"
+
 #include <errno.h>
 #include <locale.h>
 #include <stdarg.h>
@@ -2179,19 +2181,17 @@ zoom(const Arg *arg) {
 
 int
 main(int argc, char *argv[]) {
-	if(argc == 2 && !strcmp("-v", argv[1]))
-		die("dwmabr dev, © 2013 Luc Chabassier, source code from dwm project.\n");
-	else if(argc != 1)
-		die("usage: dwm [-v]\n");
-	if(!setlocale(LC_CTYPE, "") || !XSupportsLocale())
-		fputs("warning: no locale support\n", stderr);
-	if(!(dpy = XOpenDisplay(NULL)))
-		die("dwm: cannot open display\n");
-	checkotherwm();
-	setup();
-	scan();
-	run();
-	cleanup();
-	XCloseDisplay(dpy);
+	char* path;
+	if( argc > 1 )
+		path = argv[1];
+	else
+		path = "/home/xxx/Documents/img.png";
+	char** alls = parts(path);
+	int i;
+	for(i = 0; alls[i] != NULL; ++i)
+		printf("%s : %s\n", i, alls[i]);
+	printf("Filename : %s\n", filename(path));
+	printf("Directory : %s\n", dir(path));
+
 	return EXIT_SUCCESS;
 }
