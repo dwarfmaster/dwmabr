@@ -14,3 +14,7 @@ doc/latex
 *Test*
 *tmp*
 
+# Fichiers temporaires
+*.swp
+*~
+
