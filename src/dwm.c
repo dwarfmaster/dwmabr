@@ -264,6 +264,7 @@ static int xerror(Display *dpy, XErrorEvent *ee);
 static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
+static void fillClientDir(Client* c); // Remplit le dossier d'une fenêtre
 
 /* variables */
 static const char broken[] = "broken"; // Valeur d'erreur par défaut
@@ -2225,6 +2226,71 @@ zoom(const Arg *arg) {
 		if(!c || !(c = nexttiled(c->next)))
 			return;
 	pop(c);
+}
+
+#define STOREMEMBERP(Path, mem) strcpy(path, c->dirwatch); strcat(path, (Path)); \
+	afile = fopen(path, "w"); \
+	if(afile == NULL) \
+		die("can't open %s.", path); \
+	sprintf(buffer, "%i", c->mem); \
+	fputs(buffer, afile); \
+	fclose(afile);
+
+void 
+fillClientDir(Client* c)
+{
+	/* Les fichiers créés :
+	 * name
+	 * x
+	 * y
+	 * width
+	 * height
+	 */
+
+	char buffer[40]; // Pour les différentes conversions nombre vers chaine
+	char* path = malloc(sizeof(char) * (strlen(c->dirwatch + 10)));
+	if(path == NULL)
+		die("can't malloc.");
+
+	strcpy(path, c->dirwatch); strcat(path, "name");
+	FILE* afile = fopen(path, "w");
+	if(afile == NULL)
+		die("can't open %s.", path);
+	fputs(c->name, afile);
+	fclose(afile);
+
+	strcpy(path, c->dirwatch); strcat(path, "x");
+	afile = fopen(path, "w");
+	if(afile == NULL)
+		die("can't open %s.", path);
+	sprintf(buffer, "%i", c->x);
+	fputs(buffer, afile);
+	fclose(afile);
+
+	strcpy(path, c->dirwatch); strcat(path, "y");
+	afile = fopen(path, "w");
+	if(afile == NULL)
+		die("can't open %s.", path);
+	sprintf(buffer, "%i", c->y);
+	fputs(buffer, afile);
+	fclose(afile);
+
+	strcpy(path, c->dirwatch); strcat(path, "width");
+	afile = fopen(path, "w");
+	if(afile == NULL)
+		die("can't open %s.", path);
+	sprintf(buffer, "%i", c->w);
+	fputs(buffer, afile);
+	fclose(afile);
+
+	strcpy(path, c->dirwatch); strcat(path, "height");
+	afile = fopen(path, "w");
+	if(afile == NULL)
+		die("can't open %s.", path);
+	sprintf(buffer, "%i", c->h);
+	fputs(buffer, afile);
+	fclose(afile);
+
 }
 
 int
