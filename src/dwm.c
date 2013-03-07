@@ -1872,7 +1872,7 @@ unmanage(Client *c, Bool destroyed) {
 	// On ferme le watch
 	ino_unwatch(c->watch);
 	c->watch = -1;
-	rmdir(c->dirwatch);
+	removeDir(c->dirwatch);
 	free(c->dirwatch);
 	c->dirwatch = NULL;
 
