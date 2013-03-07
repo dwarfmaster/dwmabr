@@ -12,7 +12,7 @@ char* duplicate(const char* src)
 	if(new == NULL)
 		return NULL;
 
-	memcpy(new, src, size);
+	strcpy(new, src);
 	return new;
 }
 
