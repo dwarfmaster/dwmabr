@@ -43,6 +43,7 @@
 #endif /* XINERAMA */
 
 #include "inotools.h"
+#include "filetools.h"
 
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask) // Masque d'évènement pour les boutons
@@ -265,6 +266,7 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void fillClientDir(Client* c); // Remplit le dossier d'une fenêtre
+static int removeDir(char* path); // Supprime récursivement un dossier
 
 /* variables */
 static const char broken[] = "broken"; // Valeur d'erreur par défaut
@@ -2265,6 +2267,40 @@ fillClientDir(Client* c)
 	STOREMEMBERP("/y", y);
 	STOREMEMBERP("/width", w);
 	STOREMEMBERP("/height", h);
+}
+
+int
+removeDir(char* path)
+{
+	size_t length, i;
+	struct dirent** contents;
+	DIR* dir = opendir(path);
+	if(dir == NULL)
+		return -1;
+
+	contents = dirContain(dir, &length);
+	if(contents == NULL)
+		return -1;
+
+	// Le deux pour sauter le . et le ..
+	for(i = 2; i < length; ++i)
+	{
+		if(contents[i]->d_type == DT_DIR)
+		{
+			if(removeDir(contents[i]->d_name) < 0)
+			{
+				free(contents);
+				closedir(dir);
+				return -1;
+			}
+		}
+		else
+			unlink(contents[i]->d_name);
+	}
+
+	free(contents);
+	closedir(dir);
+	return 0;
 }
 
 int
