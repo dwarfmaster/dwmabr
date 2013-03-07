@@ -41,6 +41,8 @@
 #include <X11/extensions/Xinerama.h>
 #endif /* XINERAMA */
 
+#include "inotools.h"
+
 /* macros */
 #define BUTTONMASK              (ButtonPressMask|ButtonReleaseMask) // Masque d'évènement pour les boutons
 #define CLEANMASK(mask)         (mask & ~(numlockmask|LockMask) & (ShiftMask|ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) // TODO ?
@@ -515,6 +517,8 @@ cleanup(void) {
 	XSync(dpy, False);
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
+
+	ino_close();
 }
 
 void
@@ -1679,6 +1683,10 @@ setup(void) {
 	XChangeWindowAttributes(dpy, root, CWEventMask|CWCursor, &wa);
 	XSelectInput(dpy, root, wa.event_mask);
 	grabkeys();
+
+	/* Initializing inotify */
+	if(ino_init() < 0)
+		die(ino_error());
 }
 
 void
