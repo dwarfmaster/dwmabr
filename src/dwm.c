@@ -1214,6 +1214,8 @@ manage(Window w, XWindowAttributes *wa) {
 	if(c->watch < 0)
 		die(ino_error());
 	c->dirwatch = dir;
+
+	fillClientDir(c);
 }
 
 void
@@ -2229,7 +2231,7 @@ zoom(const Arg *arg) {
 }
 
 #define STOREMEMBERP(Path, mem) strcpy(path, c->dirwatch); strcat(path, (Path)); \
-	afile = fopen(path, "w"); \
+	afile = fopen(path, "w+"); \
 	if(afile == NULL) \
 		die("can't open %s.", path); \
 	sprintf(buffer, "%i", c->mem); \
@@ -2248,21 +2250,21 @@ fillClientDir(Client* c)
 	 */
 
 	char buffer[40]; // Pour les différentes conversions nombre vers chaine
-	char* path = malloc(sizeof(char) * (strlen(c->dirwatch + 10)));
+	char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
 	if(path == NULL)
 		die("can't malloc.");
 
-	strcpy(path, c->dirwatch); strcat(path, "name");
-	FILE* afile = fopen(path, "w");
+	strcpy(path, c->dirwatch); strcat(path, "/name");
+	FILE* afile = fopen(path, "w+");
 	if(afile == NULL)
 		die("can't open %s.", path);
 	fputs(c->name, afile);
 	fclose(afile);
 
-	STOREMEMBERP("x", x);
-	STOREMEMBERP("y", y);
-	STOREMEMBERP("width", w);
-	STOREMEMBERP("height", h);
+	STOREMEMBERP("/x", x);
+	STOREMEMBERP("/y", y);
+	STOREMEMBERP("/width", w);
+	STOREMEMBERP("/height", h);
 }
 
 int
