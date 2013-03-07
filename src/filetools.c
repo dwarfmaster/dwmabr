@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <unistd.h>
 
 char* duplicate(const char* src)
 {
@@ -125,6 +126,39 @@ void freeAll(char** alls, size_t length)
 	for(i = 0; i < length; ++i)
 		free(alls[i]);
 	free(alls);
+}
+
+int removeDir(char* path)
+{
+	size_t length, i;
+	struct dirent** contents;
+	DIR* dir = opendir(path);
+	if(dir == NULL)
+		return -1;
+
+	contents = dirContain(dir, &length);
+	if(contents == NULL)
+		return -1;
+
+	// Le deux pour sauter le . et le ..
+	for(i = 2; i < length; ++i)
+	{
+		if(contents[i]->d_type == DT_DIR)
+		{
+			if(removeDir(contents[i]->d_name) < 0)
+			{
+				free(contents);
+				closedir(dir);
+				return -1;
+			}
+		}
+		else
+			unlink(contents[i]->d_name);
+	}
+
+	free(contents);
+	closedir(dir);
+	return 0;
 }
 
 
