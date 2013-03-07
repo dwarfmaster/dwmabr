@@ -2259,38 +2259,10 @@ fillClientDir(Client* c)
 	fputs(c->name, afile);
 	fclose(afile);
 
-	strcpy(path, c->dirwatch); strcat(path, "x");
-	afile = fopen(path, "w");
-	if(afile == NULL)
-		die("can't open %s.", path);
-	sprintf(buffer, "%i", c->x);
-	fputs(buffer, afile);
-	fclose(afile);
-
-	strcpy(path, c->dirwatch); strcat(path, "y");
-	afile = fopen(path, "w");
-	if(afile == NULL)
-		die("can't open %s.", path);
-	sprintf(buffer, "%i", c->y);
-	fputs(buffer, afile);
-	fclose(afile);
-
-	strcpy(path, c->dirwatch); strcat(path, "width");
-	afile = fopen(path, "w");
-	if(afile == NULL)
-		die("can't open %s.", path);
-	sprintf(buffer, "%i", c->w);
-	fputs(buffer, afile);
-	fclose(afile);
-
-	strcpy(path, c->dirwatch); strcat(path, "height");
-	afile = fopen(path, "w");
-	if(afile == NULL)
-		die("can't open %s.", path);
-	sprintf(buffer, "%i", c->h);
-	fputs(buffer, afile);
-	fclose(afile);
-
+	STOREMEMBERP("x", x);
+	STOREMEMBERP("y", y);
+	STOREMEMBERP("width", w);
+	STOREMEMBERP("height", h);
 }
 
 int
