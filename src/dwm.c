@@ -29,6 +29,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
@@ -103,6 +104,8 @@ struct Client { // Un client
 	Client *snext; // TODO ??
 	Monitor *mon; // Le moniteur (écran);
 	Window win; // La fenêtre X11
+	InoWatch watch; // Le watch
+	char* dirwatch; // Le dossier
 };
 
 typedef struct {
@@ -1191,6 +1194,21 @@ manage(Window w, XWindowAttributes *wa) {
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
 	focus(NULL);
+
+	// Ajoute le watch
+	char* windir = "/tmp/dwmabr/";
+	char* dir = malloc(sizeof(char) * (strlen(windir) + strlen(c->name)));
+	if(dir == NULL)
+		die("can't malloc.");
+	strcpy(dir, "/");
+	strcat(dir, windir);
+	strcat(dir, c->name);
+
+	mkdir(dir, S_IRWXU | S_IRWXG);
+	c->watch = ino_watch(dir);
+	if(c->watch < 0)
+		die(ino_error());
+	c->dirwatch = dir;
 }
 
 void
@@ -1840,6 +1858,13 @@ void
 unmanage(Client *c, Bool destroyed) {
 	Monitor *m = c->mon;
 	XWindowChanges wc;
+
+	// On ferme le watch
+	ino_unwatch(c->watch);
+	c->watch = -1;
+	rmdir(c->dirwatch);
+	free(c->dirwatch);
+	c->dirwatch = NULL;
 
 	/* The server grab construct avoids race conditions. */
 	detach(c);
