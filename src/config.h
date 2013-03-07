@@ -107,3 +107,4 @@ static Button buttons[] = {
 };
 
 #define DELAY 100 // Le delay entre chaque main loop
+static const char *abrpath = "/tmp/dwmabr/";
