@@ -524,6 +524,7 @@ cleanup(void) {
 	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
 
 	ino_close();
+	removeDir(abrpath);
 }
 
 void
@@ -1715,6 +1716,29 @@ setup(void) {
 	/* Initializing inotify */
 	if(ino_init() < 0)
 		die(ino_error());
+
+	/* Creating abr */
+	/* Actual abr :
+	 * clients/
+	 */
+	char* apath = malloc(sizeof(char) * (strlen(abrpath) + 20)); // Le buffer pour le chemin
+	if(apath == NULL)
+		die("can't malloc.");
+	// On crée d'abor le abrpath
+	size_t length, i;
+	char** alls = parts(abrpath, &length);
+	strcpy(apath, "/");
+	for(i = 0; i < length; ++i)
+	{
+		strcat(apath, alls[i]);
+		mkdir(apath, S_IRWXU | S_IRWXG);
+		strcat(apath, "/");
+	}
+	freeAll(alls, length);
+
+	strcpy(apath, abrpath); strcat(apath, "clients");
+	mkdir(apath, S_IRWXU | S_IRWXG);
+	free(apath);
 }
 
 void
