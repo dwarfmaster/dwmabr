@@ -158,6 +158,7 @@ int removeDir(char* path)
 
 	free(contents);
 	closedir(dir);
+	rmdir(path);
 	return 0;
 }
 
