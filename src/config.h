@@ -106,3 +106,4 @@ static Button buttons[] = {
 	{ ClkTagBar,            MODKEY,         Button3,        toggletag,      {0} },
 };
 
+#define DELAY 100 // Le delay entre chaque main loop

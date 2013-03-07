@@ -1504,6 +1504,8 @@ run(void) {
 			if(handler[ev.type])
 				handler[ev.type](&ev); /* call handler */
 		}
+
+		usleep(DELAY);
 	}
 }
 
