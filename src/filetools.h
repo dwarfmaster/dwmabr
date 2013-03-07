@@ -5,6 +5,10 @@
 #include <dirent.h>
 #include <stdio.h>
 
+#ifndef _DIRENT_HAVE_D_TYPE
+#pragma error "struct dirent havent d_type, needed."
+#endif
+
 // Le retour des fonctions suivantes doit être libéré avec free, et est égal à NULL en cas d'erreur
 char** parts(char* path, size_t* length); // Découpe un chemin : /home/xxx/Documents/img.png -> home, xxx, Documents, img.png, chaque chaine doit être libérée avant de libéré le tout
 char* filename(char* path); // /home/xxx/Documents/img.png -> img.png
