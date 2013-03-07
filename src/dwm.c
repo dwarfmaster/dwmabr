@@ -1196,13 +1196,16 @@ manage(Window w, XWindowAttributes *wa) {
 	focus(NULL);
 
 	// Ajoute le watch
-	char* windir = "/tmp/dwmabr/";
-	char* dir = malloc(sizeof(char) * (strlen(windir) + strlen(c->name)));
+	char* windir = "tmp/dwmabr/";
+	char* dir = malloc(sizeof(char) * (strlen(windir) + 10)); // Le +10 est pour stocker l'ID de la fenêtre
 	if(dir == NULL)
 		die("can't malloc.");
+	char id[10]; // L'ID de la fenêtre
+	sprintf(id, "%X", c->win);
+
 	strcpy(dir, "/");
 	strcat(dir, windir);
-	strcat(dir, c->name);
+	strcat(dir, id);
 
 	mkdir(dir, S_IRWXU | S_IRWXG);
 	c->watch = ino_watch(dir);
