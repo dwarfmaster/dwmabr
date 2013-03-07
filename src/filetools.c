@@ -128,7 +128,7 @@ void freeAll(char** alls, size_t length)
 	free(alls);
 }
 
-int removeDir(char* path)
+int removeDir(const char* path)
 {
 	size_t length, i;
 	struct dirent** contents;
