@@ -143,9 +143,20 @@ int removeDir(char* path)
 	// Le deux pour sauter le . et le ..
 	for(i = 2; i < length; ++i)
 	{
+		char* pathfile = malloc(sizeof(char) * (strlen(contents[i]->d_name) + strlen(path) + 1)); // Le +1 pour rajouter le '/'
+		if(pathfile == NULL)
+		{
+			free(contents);
+			closedir(dir);
+			return -1;
+		}
+		strcpy(pathfile, path);
+		strcat(pathfile, "/");
+		strcat(pathfile, contents[i]->d_name);
+
 		if(contents[i]->d_type == DT_DIR)
 		{
-			if(removeDir(contents[i]->d_name) < 0)
+			if(removeDir(pathfile) < 0)
 			{
 				free(contents);
 				closedir(dir);
@@ -153,7 +164,9 @@ int removeDir(char* path)
 			}
 		}
 		else
-			unlink(contents[i]->d_name);
+			unlink(pathfile);
+
+		free(pathfile);
 	}
 
 	free(contents);
