@@ -217,7 +217,8 @@ static void resize(Client *c, int x, int y, int w, int h, Bool interact);
 static void resizeclient(Client *c, int x, int y, int w, int h);
 static void resizemouse(const Arg *arg);
 static void restack(Monitor *m); // Réorganise les fenêtres du moniteur
-static void run(void);
+static Bool validate(Display*, XEvent*, char*); // Teste si l'évènement arrivant est valide
+static void run(void); // Boucle principale
 static void scan(void);
 static Bool sendevent(Client *c, Atom proto);
 static void sendmon(Client *c, Monitor *m);
@@ -1461,14 +1462,24 @@ restack(Monitor *m) {
 	while(XCheckMaskEvent(dpy, EnterWindowMask, &ev));
 }
 
+Bool
+validate(Display* dpy, XEvent* ev, char* data) {
+	return True; // On accepte tous les évènements
+}
+
 void
 run(void) {
 	XEvent ev;
 	/* main event loop */
 	XSync(dpy, False);
-	while(running && !XNextEvent(dpy, &ev))
-		if(handler[ev.type])
-			handler[ev.type](&ev); /* call handler */
+	while(running)
+	{
+		if(XCheckIfEvent(dpy, &ev, validate, NULL))
+		{
+			if(handler[ev.type])
+				handler[ev.type](&ev); /* call handler */
+		}
+	}
 }
 
 void
