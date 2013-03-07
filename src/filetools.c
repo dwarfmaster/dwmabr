@@ -16,7 +16,7 @@ char* duplicate(const char* src)
 	return new;
 }
 
-char** parts(char* path, size_t* length)
+char** parts(const char* path, size_t* length)
 {
 	size_t nbParts = 0, i = 0;
 	char* part = NULL;
@@ -62,7 +62,7 @@ char** parts(char* path, size_t* length)
 	return alls;
 }
 
-char* filename(char* path)
+char* filename(const char* path)
 {
 	size_t length = 0;
 	char** alls = parts(path, &length);
@@ -79,7 +79,7 @@ char* filename(char* path)
 	return file;
 }
 
-char* dir(char* path)
+char* dir(const char* path)
 {
 	size_t lenIn = strlen(path);
 	char* last = filename(path);
