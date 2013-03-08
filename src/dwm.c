@@ -1146,6 +1146,7 @@ manage(Window w, XWindowAttributes *wa) {
 	if(!(c = calloc(1, sizeof(Client))))
 		die("fatal: could not malloc() %u bytes\n", sizeof(Client));
 	c->win = w;
+	c->watch = -1;
 	updatetitle(c);
 	if(XGetTransientForHint(dpy, w, &trans) && (t = wintoclient(trans))) {
 		c->mon = t->mon;
@@ -2131,6 +2132,18 @@ updatetitle(Client *c) {
 		gettextprop(c->win, XA_WM_NAME, c->name, sizeof c->name);
 	if(c->name[0] == '\0') /* hack to mark broken clients */
 		strcpy(c->name, broken);
+
+	// On écrit le titre dans le fichier
+	if(c->watch < 0)
+		return;
+
+	char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
+	if(path == NULL)
+		return;
+	strcpy(path, c->dirwatch);
+	strcat(path, "/name");
+	writeToFile(path, c->name);
+	free(path);
 }
 
 void
@@ -2273,7 +2286,6 @@ fillClientDir(Client* c)
 	 * width
 	 * height
 	 */
-
 	char buffer[40]; // Pour les différentes conversions nombre vers chaine
 	char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
 	if(path == NULL)
