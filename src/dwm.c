@@ -2256,7 +2256,7 @@ zoom(const Arg *arg) {
 }
 
 #define STOREMEMBERP(Path, mem) strcpy(path, c->dirwatch); strcat(path, (Path)); \
-	afile = fopen(path, "w+"); \
+	afile = fopen(path, "w"); \
 	if(afile == NULL) \
 		die("can't open %s.", path); \
 	sprintf(buffer, "%i", c->mem); \
@@ -2280,7 +2280,7 @@ fillClientDir(Client* c)
 		die("can't malloc.");
 
 	strcpy(path, c->dirwatch); strcat(path, "/name");
-	FILE* afile = fopen(path, "w+");
+	FILE* afile = fopen(path, "w");
 	if(afile == NULL)
 		die("can't open %s.", path);
 	fputs(c->name, afile);
