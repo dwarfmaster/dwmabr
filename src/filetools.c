@@ -176,7 +176,7 @@ int removeDir(const char* path)
 	return 0;
 }
 
-int writeTofile(const char* path, const char* str, ...)
+int writeToFile(const char* path, const char* str, ...)
 {
 	FILE* f = fopen(path, "w");
 	if(f == NULL)

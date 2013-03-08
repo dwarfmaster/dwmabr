@@ -17,7 +17,7 @@ struct dirent** dirContain(DIR* dir, size_t* length); // Écrit la taille lue da
 void freeAll(char** alls, size_t length); // Facilite la libération du retour de parts
 int removeDir(const char* path); // Supprime récursivement un dossier
 
-int writeTofile(const char* path, const char* str, ...);
+int writeToFile(const char* path, const char* str, ...);
 
 #endif
 
