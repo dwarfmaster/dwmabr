@@ -3,6 +3,7 @@
 
 #include <string.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <unistd.h>
 
 char* duplicate(const char* src)
@@ -175,4 +176,18 @@ int removeDir(const char* path)
 	return 0;
 }
 
+int writeTofile(const char* path, const char* str, ...)
+{
+	FILE* f = fopen(path, "w");
+	if(f == NULL)
+		return -1;
+
+	va_list ap;
+	va_start(ap, str);
+	fprintf(f, str, ap);
+
+	va_end(ap);
+	fclose(f);
+	return 0;
+}
 
