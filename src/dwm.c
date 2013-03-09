@@ -422,6 +422,32 @@ arrange(Monitor *m) {
 		restack(m);
 	} else for(m = mons; m; m = m->next)
 		arrangemon(m);
+
+	// On met à jour les fichiers de position et de taille des fenêtres.
+	if(m)
+	{
+		Client* c;
+		for(c = m->stack; c; c = c->snext) // TODO all clients
+		{
+			if(c->watch >= 0)
+			{
+				char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
+				if(path == NULL)
+				{
+					XSync(dpy, False);
+					return;
+				}
+				strcpy(path, c->dirwatch); strcat(path, "/x");
+				writeToFile(path, "%i", c->x);
+				strcpy(path, c->dirwatch); strcat(path, "/y");
+				writeToFile(path, "%i", c->y);
+				strcpy(path, c->dirwatch); strcat(path, "/width");
+				writeToFile(path, "%i", c->w);
+				strcpy(path, c->dirwatch); strcat(path, "/height");
+				writeToFile(path, "%i", c->h);
+			}
+		}
+	}
 }
 
 void
@@ -656,6 +682,22 @@ configurerequest(XEvent *e) {
 		}
 		else
 			configure(c);
+
+		// On écrit les nouvelles tailles et positions
+		char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
+		if(path == NULL)
+		{
+			XSync(dpy, False);
+			return;
+		}
+		strcpy(path, c->dirwatch); strcat(path, "/x");
+		writeToFile(path, "%i", c->x);
+		strcpy(path, c->dirwatch); strcat(path, "/y");
+		writeToFile(path, "%i", c->y);
+		strcpy(path, c->dirwatch); strcat(path, "/width");
+		writeToFile(path, "%u", c->w);
+		strcpy(path, c->dirwatch); strcat(path, "/height");
+		writeToFile(path, "%u", c->h);
 	}
 	else {
 		wc.x = ev->x;
@@ -1172,7 +1214,6 @@ manage(Window w, XWindowAttributes *wa) {
 	c->y = MAX(c->y, ((c->mon->by == c->mon->my) && (c->x + (c->w / 2) >= c->mon->wx)
 	           && (c->x + (c->w / 2) < c->mon->wx + c->mon->ww)) ? bh : c->mon->my);
 	c->bw = borderpx;
-
 	wc.border_width = c->bw;
 	XConfigureWindow(dpy, w, CWBorderWidth, &wc);
 	XSetWindowBorder(dpy, w, dc.norm[ColBorder]);
@@ -1195,9 +1236,6 @@ manage(Window w, XWindowAttributes *wa) {
 	if (c->mon == selmon)
 		unfocus(selmon->sel, False);
 	c->mon->sel = c;
-	arrange(c->mon);
-	XMapWindow(dpy, c->win);
-	focus(NULL);
 
 	// Ajoute le watch
 	char* windir = "clients/";
@@ -1217,8 +1255,11 @@ manage(Window w, XWindowAttributes *wa) {
 	if(c->watch < 0)
 		die(ino_error());
 	c->dirwatch = dir;
-
 	fillClientDir(c);
+
+	arrange(c->mon);
+	XMapWindow(dpy, c->win);
+	focus(NULL);
 }
 
 void
