@@ -184,7 +184,7 @@ int writeToFile(const char* path, const char* str, ...)
 
 	va_list ap;
 	va_start(ap, str);
-	fprintf(f, str, ap);
+	vfprintf(f, str, ap);
 
 	va_end(ap);
 	fclose(f);
