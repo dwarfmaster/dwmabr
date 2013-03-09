@@ -266,6 +266,8 @@ static int xerrordummy(Display *dpy, XErrorEvent *ee);
 static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void fillClientDir(Client* c); // Remplit le dossier d'une fenêtre
+static void createTagsAbr(); // Crée l'arborescence des tags.
+static void fillTagDir(const char* path, size_t tag); // Remplit le dossier d'un tag
 
 /* variables */
 static const char broken[] = "broken"; // Valeur d'erreur par défaut
@@ -1781,6 +1783,8 @@ setup(void) {
 	strcpy(apath, abrpath); strcat(apath, "clients");
 	mkdir(apath, S_IRWXU | S_IRWXG);
 	free(apath);
+
+	createTagsAbr();
 }
 
 void
@@ -2343,6 +2347,62 @@ fillClientDir(Client* c)
 	STOREMEMBERP("/y", y);
 	STOREMEMBERP("/width", w);
 	STOREMEMBERP("/height", h);
+}
+
+void
+createTagsAbr()
+{
+	size_t i;
+	char* path = malloc(sizeof(char) * (strlen(abrpath) + 100));
+	if(path == NULL)
+		die("can't malloc.");
+
+	strcpy(path, abrpath); strcat(path, "/tags/");
+	mkdir(path, S_IRWXU | S_IRWXG);
+
+	for(i = 0; i < LENGTH(tags); ++i)
+	{
+		strcpy(path, abrpath); strcat(path, "/tags/");
+		strcat(path, tags[i]);
+		mkdir(path, S_IRWXU | S_IRWXG);
+		fillTagDir(path, i);
+	}
+
+	free(path);
+}
+
+void
+fillTagDir(const char* path, size_t tag)
+{
+	/* Contient des liens vers toutes les fenêtres du tag. */
+	char* newpath = malloc(sizeof(char) * (strlen(path) + 20));
+	if(newpath == NULL)
+		die("can't malloc at %i.", __LINE__);
+	char* oldpath = NULL;
+	char buffer[40];
+
+	Client *c = selmon->clients;
+	for(; c != NULL; c = c->next)
+	{
+		if(c->tags & (1 << tag) && c->watch >= 0)
+		{
+			oldpath = malloc(sizeof(char) * (strlen(c->dirwatch) + 20));
+			if(oldpath == NULL)
+				die("can't malloc at %i.", __LINE__);
+			strcpy(oldpath, c->dirwatch);
+
+			sprintf(buffer, "%X", c->win);
+			strcpy(newpath, path); strcat(newpath, "/");
+			strcat(newpath, buffer);
+
+			if(symlink(oldpath, newpath) < 0)
+				die("can't symlink at %i.", __LINE__);
+
+			free(oldpath);
+		}
+	}
+
+	free(newpath);
 }
 
 int
