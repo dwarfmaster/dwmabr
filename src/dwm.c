@@ -2387,6 +2387,12 @@ createTagsAbr()
 		strcat(path, tags[i].name);
 		mkdir(path, S_IRWXU | S_IRWXG);
 		fillTagDir(path, i);
+
+		// Création du watch
+		tags[i].watch = ino_watch(path);
+		if(tags[i].watch < 0)
+			die("%s at %i.", ino_error(), __LINE__);
+		tags[i].dirwatch = path;
 	}
 
 	free(path);
