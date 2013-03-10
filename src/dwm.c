@@ -307,6 +307,7 @@ static DC dc; // Draw context
 static Monitor *mons = NULL, // Les monitors
 	       *selmon = NULL; // Le monitor sélectionné
 static Window root; // La fenêtre racine
+static Tag* tags; // Les tags
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
@@ -496,7 +497,7 @@ buttonpress(XEvent *e) {
 	if(ev->window == selmon->barwin) {
 		i = x = 0;
 		do
-			x += TEXTW(tags[i]);
+			x += TEXTW(tags[i].name);
 		while(ev->x >= x && ++i < LENGTH(tags));
 		if(i < LENGTH(tags)) {
 			click = ClkTagBar;
@@ -806,9 +807,9 @@ drawbar(Monitor *m) {
 	}
 	dc.x = 0;
 	for(i = 0; i < LENGTH(tags); i++) {
-		dc.w = TEXTW(tags[i]);
+		dc.w = TEXTW(tags[i].name);
 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
-		drawtext(tags[i], col, urg & 1 << i);
+		drawtext(tags[i].name, col, urg & 1 << i);
 		drawsquare(m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
 		           occ & 1 << i, urg & 1 << i, col);
 		dc.x += dc.w;
@@ -2369,7 +2370,7 @@ createTagsAbr()
 	for(i = 0; i < LENGTH(tags); ++i)
 	{
 		strcpy(path, abrpath); strcat(path, "/tags/");
-		strcat(path, tags[i]);
+		strcat(path, tags[i].name);
 		mkdir(path, S_IRWXU | S_IRWXG);
 		fillTagDir(path, i);
 	}
