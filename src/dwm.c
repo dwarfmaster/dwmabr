@@ -520,6 +520,8 @@ buttonpress(XEvent *e) {
 		if(click == buttons[i].click && buttons[i].func && buttons[i].button == ev->button
 		&& CLEANMASK(buttons[i].mask) == CLEANMASK(ev->state))
 			buttons[i].func(click == ClkTagBar && buttons[i].arg.i == 0 ? &arg : &buttons[i].arg);
+
+	updateTagsDirContent();
 }
 
 void
@@ -1176,6 +1178,8 @@ keypress(XEvent *e) {
 		&& CLEANMASK(keys[i].mod) == CLEANMASK(ev->state)
 		&& keys[i].func)
 			keys[i].func(&(keys[i].arg));
+
+	updateTagsDirContent();
 }
 
 void
@@ -1274,6 +1278,8 @@ manage(Window w, XWindowAttributes *wa) {
 	arrange(c->mon);
 	XMapWindow(dpy, c->win);
 	focus(NULL);
+
+	updateTagsDirContent();
 }
 
 void
@@ -1988,6 +1994,8 @@ unmanage(Client *c, Bool destroyed) {
 	focus(NULL);
 	updateclientlist();
 	arrange(m);
+
+	updateTagsDirContent();
 }
 
 void
