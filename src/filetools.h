@@ -15,7 +15,9 @@ char* filename(const char* path); // /home/xxx/Documents/img.png -> img.png
 char* dir(const char* path); // /home/xxx/Documents/img.png -> /home/xxx/Documents/
 struct dirent** dirContain(DIR* dir, size_t* length); // Écrit la taille lue dans length
 void freeAll(char** alls, size_t length); // Facilite la libération du retour de parts
+
 int removeDir(const char* path); // Supprime récursivement un dossier
+int removeDirContent(const char* path); // Supprime récursivement le contenu d'un dossier
 
 int writeToFile(const char* path, const char* str, ...);
 

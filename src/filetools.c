@@ -131,6 +131,14 @@ void freeAll(char** alls, size_t length)
 
 int removeDir(const char* path)
 {
+	if(removeDirContent(path) < 0)
+		return -1;
+	rmdir(path);
+	return 0;
+}
+
+int removeDirContent(const char* path)
+{
 	size_t length, i;
 	struct dirent** contents;
 	DIR* dir = opendir(path);
@@ -172,7 +180,6 @@ int removeDir(const char* path)
 
 	free(contents);
 	closedir(dir);
-	rmdir(path);
 	return 0;
 }
 
