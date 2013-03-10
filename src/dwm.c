@@ -158,6 +158,12 @@ struct Monitor { // Un monitor (écran)
 };
 
 typedef struct {
+	const char* name;
+	InoWatch watch;
+	char* dirwatch;
+} Tag;
+
+typedef struct {
 	const char *class; // La classe de la fenêtre
 	const char *instance; // L'instance de la fenêtre
 	const char *title; // titre de la fenêtre
