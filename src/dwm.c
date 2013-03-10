@@ -559,6 +559,9 @@ cleanup(void) {
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
 
+	size_t i;
+	for(i = 0; (1 << i) & TAGMASK; ++i)
+		free(tags[i].dirwatch);
 	free(tags);
 	ino_close();
 	removeDir(abrpath);
@@ -2395,8 +2398,6 @@ createTagsAbr()
 	}
 
 	updateTagsDirContent();
-
-	free(path);
 }
 
 void
