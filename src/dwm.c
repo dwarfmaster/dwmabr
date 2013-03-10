@@ -57,7 +57,7 @@
 #define MOUSEMASK               (BUTTONMASK|PointerMotionMask) // Masque d'évènement pour la souri
 #define WIDTH(X)                ((X)->w + 2 * (X)->bw) // TODO Largeur de quoi ?
 #define HEIGHT(X)               ((X)->h + 2 * (X)->bw) // TODO Hauteur de quoi ?
-#define TAGMASK                 ((1 << LENGTH(tags)) - 1) // TODO ?
+#define TAGMASK                 ((1 << sizetags) - 1) // TODO ?
 #define TEXTW(X)                (textnw(X, strlen(X)) + dc.font.height) // La largeur du texte + 1 * hauteur police
 
 /* enums */
@@ -308,12 +308,13 @@ static Monitor *mons = NULL, // Les monitors
 	       *selmon = NULL; // Le monitor sélectionné
 static Window root; // La fenêtre racine
 static Tag* tags; // Les tags
+static size_t sizetags;
 
 /* configuration, allows nested code to access above variables */
 #include "config.h"
 
 /* compile-time check if all tags fit into an unsigned int bit array. */
-struct NumTags { char limitexceeded[LENGTH(tags) > 31 ? -1 : 1]; }; // Test à la compilation du nombre de tags (max 31)
+struct NumTags { char limitexceeded[LENGTH(nametags) > 31 ? -1 : 1]; }; // Test à la compilation du nombre de tags (max 31)
 
 /* function implementations */
 void
@@ -498,8 +499,8 @@ buttonpress(XEvent *e) {
 		i = x = 0;
 		do
 			x += TEXTW(tags[i].name);
-		while(ev->x >= x && ++i < LENGTH(tags));
-		if(i < LENGTH(tags)) {
+		while(ev->x >= x && ++i < sizetags);
+		if(i < sizetags) {
 			click = ClkTagBar;
 			arg.ui = 1 << i;
 		}
@@ -807,7 +808,7 @@ drawbar(Monitor *m) {
 			urg |= c->tags;
 	}
 	dc.x = 0;
-	for(i = 0; i < LENGTH(tags); i++) {
+	for(i = 0; i < sizetags; i++) {
 		dc.w = TEXTW(tags[i].name);
 		col = m->tagset[m->seltags] & 1 << i ? dc.sel : dc.norm;
 		drawtext(tags[i].name, col, urg & 1 << i);
@@ -1793,10 +1794,11 @@ setup(void) {
 	free(apath);
 
 	/* Setting tags */
-	tags = malloc(sizeof(Tag) * LENGTH(nametags));
+	sizetags = LENGTH(nametags);
+	tags = malloc(sizeof(Tag) * sizetags);
 	if(tags == NULL)
 		die("can't malloc at %i.", __LINE__);
-	for(i = 0; i < LENGTH(tags); ++i)
+	for(i = 0; i < sizetags; ++i)
 	{
 		tags[i].name = nametags[i];
 		tags[i].watch = -1;
@@ -2379,7 +2381,7 @@ createTagsAbr()
 	strcpy(path, abrpath); strcat(path, "/tags/");
 	mkdir(path, S_IRWXU | S_IRWXG);
 
-	for(i = 0; i < LENGTH(tags); ++i)
+	for(i = 0; i < sizetags; ++i)
 	{
 		strcpy(path, abrpath); strcat(path, "/tags/");
 		strcat(path, tags[i].name);
