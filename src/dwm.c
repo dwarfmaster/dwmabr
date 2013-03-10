@@ -274,6 +274,7 @@ static void zoom(const Arg *arg);
 static void fillClientDir(Client* c); // Remplit le dossier d'une fenêtre
 static void createTagsAbr(); // Crée l'arborescence des tags.
 static void updateTagsDirContent(); // Remplit les dossiers des tags
+static void updateClientDirPos(const Client* c); // Met à jour la position et taille d'un client dans son dossier
 
 /* variables */
 static const char broken[] = "broken"; // Valeur d'erreur par défaut
@@ -438,25 +439,7 @@ arrange(Monitor *m) {
 	{
 		Client* c;
 		for(c = m->stack; c; c = c->snext) // TODO all clients
-		{
-			if(c->watch >= 0)
-			{
-				char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
-				if(path == NULL)
-				{
-					XSync(dpy, False);
-					return;
-				}
-				strcpy(path, c->dirwatch); strcat(path, "/x");
-				writeToFile(path, "%i", c->x);
-				strcpy(path, c->dirwatch); strcat(path, "/y");
-				writeToFile(path, "%i", c->y);
-				strcpy(path, c->dirwatch); strcat(path, "/width");
-				writeToFile(path, "%i", c->w);
-				strcpy(path, c->dirwatch); strcat(path, "/height");
-				writeToFile(path, "%i", c->h);
-			}
-		}
+			updateClientDirPos(c);
 	}
 }
 
@@ -700,20 +683,7 @@ configurerequest(XEvent *e) {
 			configure(c);
 
 		// On écrit les nouvelles tailles et positions
-		char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
-		if(path == NULL)
-		{
-			XSync(dpy, False);
-			return;
-		}
-		strcpy(path, c->dirwatch); strcat(path, "/x");
-		writeToFile(path, "%i", c->x);
-		strcpy(path, c->dirwatch); strcat(path, "/y");
-		writeToFile(path, "%i", c->y);
-		strcpy(path, c->dirwatch); strcat(path, "/width");
-		writeToFile(path, "%u", c->w);
-		strcpy(path, c->dirwatch); strcat(path, "/height");
-		writeToFile(path, "%u", c->h);
+		updateClientDirPos(c);
 	}
 	else {
 		wc.x = ev->x;
@@ -2456,6 +2426,28 @@ updateTagsDirContent()
 				free(newpath);
 			}
 		}
+	}
+}
+
+void
+updateClientDirPos(const Client* c)
+{
+	if(c->watch >= 0)
+	{
+		char* path = malloc(sizeof(char) * (strlen(c->dirwatch) + 10));
+		if(path == NULL)
+		{
+			XSync(dpy, False);
+			return;
+		}
+		strcpy(path, c->dirwatch); strcat(path, "/x");
+		writeToFile(path, "%i", c->x);
+		strcpy(path, c->dirwatch); strcat(path, "/y");
+		writeToFile(path, "%i", c->y);
+		strcpy(path, c->dirwatch); strcat(path, "/width");
+		writeToFile(path, "%i", c->w);
+		strcpy(path, c->dirwatch); strcat(path, "/height");
+		writeToFile(path, "%i", c->h);
 	}
 }
 
