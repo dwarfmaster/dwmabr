@@ -2385,15 +2385,20 @@ void
 createTagsAbr()
 {
 	size_t i;
-	char* path = malloc(sizeof(char) * (strlen(abrpath) + 100));
+	char* path = malloc(sizeof(char) * (strlen(abrpath) + 10));
 	if(path == NULL)
-		die("can't malloc.");
+		die("can't malloc at %i.", __LINE__);
 
 	strcpy(path, abrpath); strcat(path, "/tags/");
 	mkdir(path, S_IRWXU | S_IRWXG);
+	free(path);
 
 	for(i = 0; i < sizetags; ++i)
 	{
+		path = malloc(sizeof(char) * (strlen(abrpath) + strlen(tags[i].name) + 10));
+		if(path == NULL)
+			die("can't malloc at %i.", __LINE__);
+
 		strcpy(path, abrpath); strcat(path, "/tags/");
 		strcat(path, tags[i].name);
 		mkdir(path, S_IRWXU | S_IRWXG);
@@ -2417,6 +2422,12 @@ updateTagsDirContent()
 	char buffer[40];
 
 	size_t tag;
+	for(tag = 0; (1 << tag) & TAGMASK; ++tag)
+	{
+		if(tags[tag].watch >= 0)
+			removeDirContent(tags[tag].dirwatch);
+	}
+
 	Client *c = selmon->clients;
 	for(; c != NULL; c = c->next)
 	{
