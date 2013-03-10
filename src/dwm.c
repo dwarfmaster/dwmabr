@@ -273,7 +273,7 @@ static int xerrorstart(Display *dpy, XErrorEvent *ee);
 static void zoom(const Arg *arg);
 static void fillClientDir(Client* c); // Remplit le dossier d'une fenêtre
 static void createTagsAbr(); // Crée l'arborescence des tags.
-static void fillTagDir(const char* path, size_t tag); // Remplit le dossier d'un tag
+static void updateTagsDirContent(); // Remplit les dossiers des tags
 
 /* variables */
 static const char broken[] = "broken"; // Valeur d'erreur par défaut
@@ -2386,7 +2386,6 @@ createTagsAbr()
 		strcpy(path, abrpath); strcat(path, "/tags/");
 		strcat(path, tags[i].name);
 		mkdir(path, S_IRWXU | S_IRWXG);
-		fillTagDir(path, i);
 
 		// Création du watch
 		tags[i].watch = ino_watch(path);
@@ -2395,41 +2394,49 @@ createTagsAbr()
 		tags[i].dirwatch = path;
 	}
 
+	updateTagsDirContent();
+
 	free(path);
 }
 
 void
-fillTagDir(const char* path, size_t tag)
+updateTagsDirContent()
 {
 	/* Contient des liens vers toutes les fenêtres du tag. */
-	char* newpath = malloc(sizeof(char) * (strlen(path) + 20));
-	if(newpath == NULL)
-		die("can't malloc at %i.", __LINE__);
+	char* newpath = NULL;
 	char* oldpath = NULL;
 	char buffer[40];
 
+	size_t tag;
 	Client *c = selmon->clients;
 	for(; c != NULL; c = c->next)
 	{
-		if(c->tags & (1 << tag) && c->watch >= 0)
+		for(tag = 0; (1 << tag) & TAGMASK; ++tag)
 		{
-			oldpath = malloc(sizeof(char) * (strlen(c->dirwatch) + 20));
-			if(oldpath == NULL)
-				die("can't malloc at %i.", __LINE__);
-			strcpy(oldpath, c->dirwatch);
+			if(c->tags & (1 << tag)
+					&& c->watch >= 0
+					&& tags[tag].watch >= 0)
+			{
+				oldpath = malloc(sizeof(char) * (strlen(c->dirwatch) + 20));
+				if(oldpath == NULL)
+					die("can't malloc at %i.", __LINE__);
+				strcpy(oldpath, c->dirwatch);
 
-			sprintf(buffer, "%X", c->win);
-			strcpy(newpath, path); strcat(newpath, "/");
-			strcat(newpath, buffer);
+				newpath = malloc(sizeof(char) * (strlen(tags[tag].dirwatch) + 20));
+				if(oldpath == NULL)
+					die("can't malloc at %i.", __LINE__);
+				sprintf(buffer, "%X", c->win);
+				strcpy(newpath, tags[tag].dirwatch); strcat(newpath, "/");
+				strcat(newpath, buffer);
 
-			if(symlink(oldpath, newpath) < 0)
-				die("can't symlink at %i.", __LINE__);
+				if(symlink(oldpath, newpath) < 0)
+					die("can't symlink at %i.", __LINE__);
 
-			free(oldpath);
+				free(oldpath);
+				free(newpath);
+			}
 		}
 	}
-
-	free(newpath);
 }
 
 int
