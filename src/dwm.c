@@ -558,6 +558,7 @@ cleanup(void) {
 	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
 	XDeleteProperty(dpy, root, netatom[NetActiveWindow]);
 
+	free(tags);
 	ino_close();
 	removeDir(abrpath);
 }
@@ -1790,6 +1791,17 @@ setup(void) {
 	strcpy(apath, abrpath); strcat(apath, "clients");
 	mkdir(apath, S_IRWXU | S_IRWXG);
 	free(apath);
+
+	/* Setting tags */
+	tags = malloc(sizeof(Tag) * LENGTH(nametags));
+	if(tags == NULL)
+		die("can't malloc at %i.", __LINE__);
+	for(i = 0; i < LENGTH(tags); ++i)
+	{
+		tags[i].name = nametags[i];
+		tags[i].watch = -1;
+		tags[i].dirwatch = NULL;
+	}
 
 	createTagsAbr();
 }
